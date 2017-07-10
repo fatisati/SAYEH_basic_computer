@@ -1,0 +1,86 @@
+C:/Modeltech_pe_edu_10.4a/examples/datapath.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/datapath.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/add16.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/add16.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/testbench.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/testbench.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/adder.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/adder.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/memory.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/memory.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/registerfile.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/registerfile.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/wp.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/wp.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/comparator.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/comparator.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/ALU.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/ALU.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/sub.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/sub.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/add1.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/add1.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/add2.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/add2.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/address_logic.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/address_logic.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/IR.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/IR.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/pc.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/pc.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/controller.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/controller.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}} C:/Modeltech_pe_edu_10.4a/examples/flags.vhd {0 {vcom -work work -2002 -explicit -stats=none C:/Modeltech_pe_edu_10.4a/examples/flags.vhd
+Model Technology ModelSim PE Student Edition vcom 10.4a Compiler 2015.03 Apr  7 2015
+** Error: (vcom-66) Execution of vlib failed. Please check the error log for more details.
+
+
+} {3.0 4.0} {}}

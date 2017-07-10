@@ -1,0 +1,55 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity wp is
+	port (
+		clk, wpadd, wpreset: in std_logic;
+		irin: in std_logic_vector(5 downto 0);
+		wpout: out std_logic_vector(5 downto 0)
+	);
+end wp;
+
+architecture rtl of wp is
+
+	component add16
+		PORT (  a, b : IN  std_logic_vector(15 DOWNTO 0);
+            	cin  : IN  STD_LOGIC;
+            	sum1 : OUT std_logic_vector(15 DOWNTO 0);
+           	cout : OUT std_logic);
+	end component;
+
+	signal data: std_logic_vector(5 downto 0) := "000001";
+	signal idata, iirin, isum: std_logic_vector(15 downto 0);
+	signal cout, test: std_logic;
+begin
+	
+	--wpout<= data;
+	idata <= "0000000000" & data;
+	iirin<= "0000000000" & irin;
+	ad0: add16 port map(idata, iirin,'0', isum, cout);
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if(wpadd = '1') then
+				data <= isum(5 downto 0);
+				--data<= "000000";
+				
+			end if;
+		end if;
+
+		if(wpreset = '1')	then
+			data <= "000000";
+			test<='0';
+		end if;
+	end process;
+	
+	process(wpreset)
+	begin
+		if(wpreset = '0')	then
+			--data <= "000000";
+			--test<='0';
+		end if;
+	end process;
+end rtl;

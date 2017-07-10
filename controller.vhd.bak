@@ -1,0 +1,368 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity controller is
+	port (
+		irin: in std_logic_vector(15 downto 0);
+		clk, rst, memdataready, c, z: in std_logic;
+		IRload, readMem, writemem, rstpc, pcplusI, pcplus1, rplusI, rplus0, pcen: out std_logic;
+		rdonrside, rsonaddressbus, rfonopndbus, rsonopndbus, aluondatabus, irlonopndbus, dataonaddressbus: out std_logic; --on bus signals
+		rflwrite, rfhwrite: out std_logic; --register bus
+		bout, iand, ior, inot, ishl, ishr, iadd, isub, 
+		 imult, icmp, idiv, isqr, irand, itcom, ixor, isin, icos, itan, icot : out std_logic; --alu
+		cset, creset, zset, zreset, srload: out std_logic;
+		wpadd, wpreset: out std_logic; --wp
+		cinstruction: out std_logic_vector(7 downto 0) -- controller instruction
+	);
+end controller;
+
+architecture rtl of controller is
+
+	type state is (reset, fetch, fetch2, decode, exe, exe2, iwait, halt);
+	signal current_state : state;
+	signal next_state : state;
+	signal instruction: std_logic_vector(7 downto 0);
+	signal shadow, ifetch: std_logic := '0'; --fetch is one when we are in the middle of fetch state
+	signal test: std_logic_vector(3 downto 0) := "1111";
+	
+
+begin
+
+	cinstruction <= instruction;	
+	process (clk, rst)
+	begin
+		--IRload<='0'; ReadMem<='0'; writemem<='0'; rstpc<= '0';
+		if rising_edge(rst) then
+			current_state <= reset;
+			--rstpc<= '1'; pcen <= '1'; wpreset<='1'; wpadd<='0';
+		elsif (clk'event and clk = '0') then
+			current_state <= next_state; --rstpc<='0'; wpreset<='0'; --oc<='Z'; oz<='Z';
+			
+		end if;
+	end process;
+
+	process(current_state, clk)
+	begin
+		
+		
+		
+		case current_state is
+			
+			when reset =>
+				next_state<=fetch;
+				rstpc<= '1'; pcen <= '1'; wpreset<='1'; wpadd<='0'; zreset<='1'; creset<='1';
+				
+			when fetch =>
+				pcplus1<='0'; irlonopndbus <='0';bout <= '0'; rflwrite<= '0'; rfhwrite<= '0'; aluondatabus <= '0';
+				rdonrside <= '0'; rplus0 <= '0'; wpreset <= '0'; 
+				rfonopndbus <= '0'; rsonopndbus<='0'; rsonaddressbus<='0'; iand<='0'; rplusI<='0';
+				iadd<='0'; ior<='0'; ishl<='0'; ishr<='0'; inot<='0'; icmp<='0';
+				IRload<='1'; ReadMem<='1'; 
+				writemem <= '0'; pcplusI<='0'; dataonaddressbus<='0'; wpadd<='0';
+				zset<='0'; zreset<='0'; cset<='0'; creset<='0'; srload<='0'; rstpc<='0'; wpreset<='0';
+				next_state <= decode; shadow<='1';
+				
+			when fetch2 => 
+				pcplus1<='0'; irlonopndbus <='0';bout <= '0'; rflwrite<= '0'; rfhwrite<= '0'; aluondatabus <= '0';
+				rdonrside <= '0'; rplus0 <= '0'; wpreset <= '0'; 
+				iadd<='0'; ior<='0'; ishl<='0'; ishr<='0'; inot<='0'; icmp<='0';
+				rfonopndbus <= '0'; rsonopndbus<='0'; rsonaddressbus<='0'; iand<='0'; dataonaddressbus<='0';
+				IRload<='0'; ReadMem<='0'; 
+				writemem <= '0'; pcplusI<='0'; rstpc<='0'; wpreset<='0';
+				zset<='0'; zreset<='0'; cset<='0'; creset<='0'; srload<='0'; 
+				next_state <= decode;
+				
+			when decode =>
+				if(clk = '1') then
+					if(instruction(7 downto 4) = "0011") then --store
+						--after one clock data on rs and rd will be ready so the we can write
+						rdonrside <= '1'; rplus0<='1'; 
+						rfonopndbus<='1'; bout <= '1';  pcen<='0'; IRload<='0';
+						next_state <= exe;
+				
+					elsif(instruction(7 downto 4) = "1111" and instruction(1 downto 0) = "00") then --mil
+						irlonopndbus<='1'; bout<= '1'; rflwrite<= '1';
+						next_state <= exe;
+
+					elsif(instruction(7 downto 4) = "1111" and instruction(1 downto 0) = "01") then --mih
+						irlonopndbus<='1'; bout<= '1'; rfhwrite<= '1';
+						next_state <= exe;
+					
+					elsif(instruction = "00000001") then --halt
+						next_state <= halt;
+					
+					elsif(instruction = "00000110") then  --clear wp
+						wpreset <= '1';
+						if(clk='1') then
+							if(shadow='0') then
+								pcplus1<='1'; next_state<= fetch; pcen<='1'; IRload<='1';
+							else
+								next_state <= fetch2;
+								shadow<='0';
+							end if;
+						end if;
+					elsif(instruction(7 downto 4) = "0010") then --load addressed
+						rsonaddressbus<='1'; rplus0<='1'; pcen<='0'; IRload<='0'; --freezing ir and pc
+						next_state<= exe;
+					
+					
+
+					elsif(instruction(7 downto 4) = "0001") then  --move register
+						rfonopndbus<='1'; bout<='1';
+						next_state<= exe;
+					
+					elsif(instruction(7 downto 4)="0110" )then --and
+						rfonopndbus<='1'; next_state<= exe;
+					
+					elsif(instruction(7 downto 4)="1100" )then --add
+						rfonopndbus<='1'; next_state<= exe; 
+
+					elsif(instruction(7 downto 4)="0111" )then --or
+						rfonopndbus<='1'; next_state<= exe;
+						
+					elsif(instruction(7 downto 4)="1000" )then --not
+						rfonopndbus<='1'; next_state<= exe;
+						
+					elsif(instruction(7 downto 4)="1001" )then --shift left
+						rfonopndbus<='1'; next_state<= exe;
+						
+					elsif(instruction(7 downto 4)="1010" )then --shift right
+						rfonopndbus<='1'; next_state<= exe;
+						
+					elsif(instruction(7 downto 4)="1110" )then --cmp
+						rfonopndbus<='1'; next_state<= exe;
+					
+					elsif(instruction(7 downto 4)="1111"  and instruction(1 downto 0)="10")then --save pc
+						pcen<='0'; pcplusI<='1'; next_state<=exe;
+		
+					elsif(instruction(7 downto 4)="1111"  and instruction(1 downto 0)="11")then --jump addressed
+						rdonrside<='1';
+						next_state<=exe;
+						
+					elsif(instruction(7 downto 0)="00000111") then --jump rel
+						pcplusI<='1'; next_state<=fetch; pcen<='1'; IRload<='1'; 
+						
+					elsif(instruction(7 downto 0) = "00001000") then --branch if zero
+						if(z = '1') then
+							pcplusI<='1';
+						end if;
+						next_state<=fetch; pcen<='1'; IRload<='1'; 
+					
+					elsif(instruction = "00001001") then --branch if carry
+						if(c = '1') then
+							pcplusI<='1';
+						end if;
+						next_state<=fetch;  pcen<='1'; IRload<='1'; 
+						
+					elsif(instruction = "00001010") then --add wp
+						wpadd<='1'; next_state<= exe;
+						
+					elsif(instruction="00000010") then --set zero flag
+						zset<='1';
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+					
+					elsif(instruction="00000011") then --clr zero flag
+						zreset<='1';
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;	
+						
+					elsif(instruction="00000100") then --set carry flag
+						cset<='1'; 
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+						
+					elsif(instruction="00000101") then --clr carry flag
+						creset<='1';
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+		
+					elsif(instruction="00000000") then --no op
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							shadow<='0';
+						end if;
+
+					else
+						pcplus1<='1'; next_state <= fetch;  pcen<='1'; IRload<='1'; 
+					end if;
+					
+				else --clk=0
+					IRload<='0'; ReadMem<='0'; 
+					if(shadow = '1') then
+						instruction <= irin(15 downto 8);
+						
+					else
+						instruction <= irin(7 downto 0);
+					end if;
+				end if;
+				
+			when exe =>
+				if(instruction(7 downto 4) = "0011") then --store
+					--rd as address
+					
+					if(clk='1') then
+						writemem<='1'; aluondatabus<='1';--rs as data
+						next_state<=exe2;
+					end if;
+					
+
+				elsif(instruction(7 downto 4) = "1111" and (instruction(1 downto 0) = "00" or instruction(1 downto 0) = "01")) then --mil and mih 
+					aluondatabus<='1';
+					pcplus1<='1'; next_state <= fetch;  pcen<='1'; IRload<='1'; 
+					
+				elsif(instruction(7 downto 4) = "0001") then  --move register
+					aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+					if(clk='1') then
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+					
+					end if;
+					
+				elsif(instruction(7 downto 4) = "0010" ) then --load addressed
+					readmem<='1'; 
+					if(clk ='1') then
+
+						rfhwrite<='1'; rflwrite<='1';
+						next_state<= exe2;
+					end if;
+				elsif(instruction(7 downto 4)="0110" )then --and
+					
+					if(clk='0') then
+						iand<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+
+				elsif(instruction(7 downto 4)="1100" )then --add
+					if(clk='0') then
+						iadd<='1'; srload<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+					
+				elsif(instruction(7 downto 4)="0111" )then --or
+					if(clk='0') then
+						ior<='1'; srload<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+						
+				elsif(instruction(7 downto 4)="1000" )then --not
+					if(clk='0') then
+						inot<='1'; srload<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+						
+				elsif(instruction(7 downto 4)="1001" )then --shift left
+					if(clk='0') then
+						ishl<='1'; srload<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+						
+				elsif(instruction(7 downto 4)="1010" )then --shift right
+					if(clk='0') then
+						ishr<='1'; srload<='1';
+						
+					else --clk=1
+						aluondatabus<='1'; rfhwrite<='1'; rflwrite<='1';
+						next_state<=exe2;
+					end if;
+						
+				elsif(instruction(7 downto 4)="1110" )then --cmp
+					if(clk='0') then
+						icmp<='1'; srload<='1';
+						
+					else --clk=1
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch; pcen<='1'; IRload<='1';
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+					end if;
+
+				elsif(instruction = "00001010") then --add wp
+					next_state<=fetch; pcplus1<='1';  pcen<='1'; IRload<='1'; 
+					
+				elsif(instruction(7 downto 4)="1111"  and instruction(1 downto 0)="10")then --save pc
+					rfhwrite<='1'; rflwrite<='1'; dataonaddressbus<='1';
+					next_state<=exe2;
+					
+				elsif(instruction(7 downto 4)="1111"  and instruction(1 downto 0)="11")then --jump addressed
+					rplusI<='1'; next_state<=fetch;  pcen<='1'; IRload<='1'; 
+				
+				end if;
+				
+				
+			when iwait =>
+				
+			when halt =>
+				if(rst = '1') then
+					pcplus1<='1'; next_state<= fetch;  pcen<='1'; IRload<='1'; 
+				end if;
+				
+			when exe2=>
+				if(instruction(7 downto 4)="1111"  and instruction(1 downto 0)="10") then --save pc
+				
+					next_state<= fetch;  pcplus1<='1'; pcen<='1'; IRload<='1'; 
+					
+					
+				else --load address, alu operations
+				
+					
+					if(clk='1') then
+					
+						--if(instruction(7 downto 4) = "0010" or instruction(7 downto 4) = "0011") then --lda and sta
+							
+		
+						--end if;
+						
+						if(shadow='0') then
+							pcplus1<='1'; next_state<= fetch; pcen<='1'; IRload<='1'; 
+						else
+							next_state <= fetch2;
+							shadow<='0';
+						end if;
+					end if;
+					
+				end if;
+							
+		end case;
+	end process;
+end rtl;

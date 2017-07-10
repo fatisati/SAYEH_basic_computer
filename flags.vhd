@@ -1,0 +1,39 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity flags is
+	port (
+		clk,cin, zin,
+		 cset, creset, zset, zreset, srload: in std_logic;
+		 cout, zout: out std_logic
+		
+	);
+end flags;
+
+architecture rtl of flags is
+begin	
+	process(clk, cset, creset, zset, zreset)
+	begin
+		
+		if(cset='1') then
+			cout<='1';
+		elsif(creset = '1') then
+			cout<='0';
+		end if;
+		
+		if(zset='1') then
+			zout<='1';
+		elsif(zreset = '1') then
+			zout<='0';
+		end if;
+		
+		if(srload='1' and clk='1') then --rising edge
+			zout<=zin;
+			cout<=cin;
+		end if;
+		
+	end process;
+ 
+end rtl;
